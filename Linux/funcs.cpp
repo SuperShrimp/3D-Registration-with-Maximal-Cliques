@@ -14,6 +14,10 @@
 #include <pcl/surface/mls.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include "Eva.h"
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/normal_distribution.hpp>
+#include <boost/random/variate_generator.hpp>
+
 /*******************************************************************************dataload********************************************************/
 int XYZorMeshlabPly_Read(string Filename, PointCloudPtr& cloud)
 {
@@ -265,7 +269,7 @@ void feature_matching(PointCloudPtr& cloud_source, PointCloudPtr& cloud_target, 
 
 void Add_Gaussian_noise(float dev, pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud_noise)
 {
-	boost::mt19937 rng; rng.seed(static_cast<unsigned int> (time(0)));
+	boost::random::mt19937 rng; rng.seed(static_cast<unsigned int> (time(0)));
 	boost::normal_distribution<> nd(0, dev);
 	boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor(rng, nd);
 	cloud_noise->points.resize(cloud->points.size());
@@ -454,8 +458,9 @@ double Distance(pcl::PointXYZ& A, pcl::PointXYZ& B) {
 void boost_rand(int seed, int start, int end, int rand_num, std::vector<int>& idx)
 {
 	boost::mt19937 engine(seed);
-	boost::uniform_int<> distribution(start, end);
-	boost::variate_generator<boost::mt19937, boost::uniform_int<> > myrandom(engine, distribution);
+
+	boost::random::uniform_int_distribution<> distribution(start, end);
+	boost::variate_generator<boost::mt19937, boost::random::uniform_int_distribution<> > myrandom(engine, distribution);
 	std::unordered_set<int> r;
 	while (r.size() < rand_num)
 	{

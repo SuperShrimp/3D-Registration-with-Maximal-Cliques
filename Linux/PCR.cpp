@@ -16,7 +16,12 @@
 #include "Eva.h"
 #include "omp.h"
 //#include<mkl.h>
+#include <boost/random/uniform_int_distribution.hpp>
+#include <boost/random/detail/const_mod.hpp>
 #include <unsupported/Eigen/MatrixFunctions>
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/normal_distribution.hpp>
+#include <boost/random/variate_generator.hpp>
 using namespace Eigen;
 
 bool compare_vote_score(const Vote& v1, const Vote& v2) {
@@ -514,9 +519,9 @@ void GUO_ICP(PointCloudPtr& cloud_source, PointCloudPtr& cloud_target, float& mr
 		pcl::transformPointCloud(*cloud_source, *cloud_source_trans, Mat_ICP);
 		number_of_sample_points = cloud_source_trans->points.size() / pow(3.0f, residual_error);
 		vector<int> Sample_cloud_Idx;
-		boost::uniform_int<> distribution(0, cloud_source_trans->points.size());
+		boost::random::uniform_int_distribution<> distribution(0, cloud_source_trans->points.size());
 		boost::mt19937 engine;
-		boost::variate_generator<boost::mt19937, boost::uniform_int<> > myrandom(engine, distribution);
+		boost::variate_generator<boost::mt19937, boost::random::uniform_int_distribution<> > myrandom(engine, distribution);
 		for (int j = 0; j < number_of_sample_points; j++)
 			Sample_cloud_Idx.push_back(myrandom());
 		Eigen::Matrix4f Mat_i;
